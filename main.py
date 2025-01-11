@@ -97,6 +97,14 @@ async def handle_add_day(update: Update, context: CallbackContext) -> int:
     context.user_data['current_day'] = day_name
     return ADD_EXERCISE
 
+async def handle_done(update: Update, context: CallbackContext) -> int:
+    user_id = update.effective_user.id
+    await update.message.reply_text(
+        "Додавання вправ завершено!",
+        reply_markup=get_main_menu_keyboard(user_id)
+    )
+    return MAIN_MENU
+
 def get_day_menu_keyboard():
     keyboard = [
         [KeyboardButton("🏋️‍♂️ Почати тренування")],
@@ -125,7 +133,8 @@ def main():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_add_day)
             ],
             ADD_EXERCISE: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_add_exercise)
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_add_exercise),
+                CommandHandler('done', handle_done)
             ],
             WORKOUT_PROGRESS: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_workout_button)
