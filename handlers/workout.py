@@ -77,7 +77,17 @@ async def handle_workout_button(update: Update, context: CallbackContext) -> int
         return await handle_workout(update, context)
         
     elif text == "🏁 Завершити тренування":
+        day_ref = db.collection(str(user_id)).document(current_day)
+        day_data = day_ref.get().to_dict()
+        exercises = day_data.get('exercises', [])
+        
+        for ex in exercises:
+            ex['completed'] = False
+            
+        day_ref.update({'exercises': exercises})
+        
         context.user_data.pop('current_exercise_index', None)
+        
         await update.message.reply_text(
             "Тренування завершено! 💪",
             reply_markup=get_main_menu_keyboard(user_id)
